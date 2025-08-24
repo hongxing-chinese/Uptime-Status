@@ -66,8 +66,8 @@
       </div>
       <div class="flex flex-col items-center gap-1">
         <div>
-          <a 
-            :href="pkg.repository.url" 
+          修改自 <a 
+            :href="pkg.repositoryUrl" 
             target="_blank" 
             rel="noopener noreferrer"
             class="font-semibold hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
@@ -79,16 +79,16 @@
             target="_blank" 
             rel="noopener noreferrer"
             class="font-semibold hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
-          >UptimeRobot</a> 接口 | 检测频率 5 分钟
+          >UptimeRobot</a> 接口 | 默认检测频率 240 分钟
         </div>
         <div>
-          Copyright © 2020 - {{ new Date().getFullYear() }} <a 
-            :href="pkg.repository.url"
+          Copyright © 2025 - {{ new Date().getFullYear() }} <a 
+            :href="pkg.url"
             target="_blank"
             rel="noopener noreferrer"
             class="font-semibold hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
           >
-            JLinmr
+            茶山山人
           </a>
         </div>
       </div>
