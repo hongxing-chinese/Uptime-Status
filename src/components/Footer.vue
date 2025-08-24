@@ -82,7 +82,7 @@
           >UptimeRobot</a> 接口 | 默认检测频率 240 分钟
         </div>
         <div>
-          Copyright © 2025 - {{ new Date().getFullYear() }} <a 
+          Copyright © 2024 - {{ new Date().getFullYear() }} <a 
             :href="pkg.url"
             target="_blank"
             rel="noopener noreferrer"
