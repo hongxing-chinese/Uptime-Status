@@ -14,7 +14,7 @@
 
 <p align="center">🎮 在线演示：
   <a href="https://status.1949101.xyz" target="_blank">
-    https://status.bsgun.cn
+    https://status.1949101.xyz
   </a>
 </p>
 
