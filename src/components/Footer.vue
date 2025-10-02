@@ -79,7 +79,7 @@
             target="_blank" 
             rel="noopener noreferrer"
             class="font-semibold hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
-          >UptimeRobot</a> 接口 | 默认检测频率 240 分钟
+          >UptimeRobot</a> 接口 | 默认检测频率 30 分钟
         </div>
         <div>
           Copyright © 2024 - {{ new Date().getFullYear() }} <a 
