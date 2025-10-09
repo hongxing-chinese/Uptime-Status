@@ -10,6 +10,9 @@ import { processMonitorData, generateTimeRanges } from './monitor'
 const API_URL = import.meta.env.VITE_UPTIMEROBOT_API_URL
 const API_KEY = import.meta.env.VITE_UPTIMEROBOT_API_KEY
 
+/* 面板排序方式 */
+const STATUS_SORT = import.meta.env.VITE_UPTIMEROBOT_STATUS_SORT
+
 /**
  * 获取监控数据
  * @async
@@ -42,9 +45,15 @@ export const fetchMonitorData = async () => {
       throw new Error('API 请求失败: ' + response.data?.message || '未知错误')
     }
 
-    return response.data.monitors
+    if (STATUS_SORT === 'friendly_name') {
+      return response.data.monitors
+      .sort((a, b) => b.friendly_name - a.friendly_name)
+      .map(processMonitorData)
+    } else if (STATUS_SORT === 'create_datetime') {
+      return response.data.monitors
       .sort((a, b) => b.create_datetime - a.create_datetime)
       .map(processMonitorData)
+    }
 
   } catch (error) {
     console.error('获取监控数据失败:', error)

@@ -105,7 +105,11 @@ VITE_UPTIMEROBOT_API_KEY = "ur2290572-af4663a4e3f83be26119abbe"
 VITE_UPTIMEROBOT_API_URL = "/api/status"
 
 # 站点名称
-VITE_APP_TITLE = "梦爱吃鱼"
+VITE_APP_TITLE = "Status Page By 山人"
+
+# 监控面板排序方式
+# 支持 friendly_name 和 create_datetime 两种方式
+VITE_UPTIMEROBOT_STATUS_SORT = "friendly_name"
 ```
 
 4. 开发调试
