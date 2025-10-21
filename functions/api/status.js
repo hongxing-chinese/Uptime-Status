@@ -29,18 +29,12 @@ export async function onRequest(context) {
   try {
     // 从请求中获取数据
     const data = await context.request.json()
-    const params = Object.fromEntries(url.searchParams.entries())
-
-    const requestBody = {
-      ...data,
-      ...params
-    }
 
     // 转发请求到 UptimeRobot API
     const response = await fetch('https://api.uptimerobot.com/v2/getMonitors', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(data)
     })
 
     const newResponse = new Response(response.body, response)

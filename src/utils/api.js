@@ -29,16 +29,13 @@ export const fetchMonitorData = async () => {
       {
         api_key: API_KEY,
         format: 'json',
+        response_times: 1,
+        logs: 1,
         custom_uptime_ranges: generateTimeRanges(),
-        logs: 1
+        response_times_start_date: Math.floor((Date.now() - 24 * 60 * 60 * 1000) / 1000),
+        response_times_end_date: Math.floor(Date.now() / 1000)
       },
       {
-        params: {
-          api_key: API_KEY,
-          response_times: 1,
-          response_times_start_date: Math.floor((Date.now() - 24 * 60 * 60 * 1000) / 1000),
-          response_times_end_date: Math.floor(Date.now() / 1000)
-        },
         signal: controller.signal,
         timeout: 30000
       }
