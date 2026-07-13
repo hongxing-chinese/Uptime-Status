@@ -43,10 +43,6 @@ Website Monitor is a website status monitoring dashboard developed based on the 
 
 > **Upgrade notice**: UptimeRobot has deprecated the legacy v2 endpoint (`.../v2/getMonitors`). If you are still on an older version, please pull the latest code and redeploy, otherwise data loading may fail or time out.
 
-## ✨ Feature Preview
-
-![Feature Preview](https://i1.wp.com/dev.ruom.top/i/2025/01/25/629114.webp)
-
 ## ✨ Features
 
 - 📊 Real-time Monitoring: Supports multiple monitoring methods
@@ -55,7 +51,7 @@ Website Monitor is a website status monitoring dashboard developed based on the 
 - 📈 Data Statistics: Visual display of uptime and response time (loaded on click)
 - 🔔 Outage Records: Detailed downtime records and cause analysis
 - 🔄 Auto-refresh: Automatically updates monitoring data (5-minute cache)
-- 🔃 Sorting: Sort by name, time, or status with ascending/descending order
+- 🔃 Sorting: Pin configured domains and switch between name, time, status, ascending, and descending order
 - 💫 Smooth Animations: Fluid UI interaction experience
 
 ### UptimeRobot API Changes
@@ -68,7 +64,7 @@ UptimeRobot has fully migrated to the **v3 REST API**. The legacy v2 endpoint is
 | Auth | POST form + `api_key` | `Authorization: Bearer <key>` |
 | Data | Single response | Paginated REST (monitors, incidents, etc.) |
 
-This project connects to v3 through the `/api/status` server-side proxy. You do **not** need to call UptimeRobot directly from the frontend when deployed.
+This project connects to v3 through the `/api/status` server-side proxy. You do **not** need to call UptimeRobot directly from the frontend when deployed. Vercel reads Node.js environment variables, while Cloudflare Pages and EdgeOne Pages read edge-function bindings; both use the server-only `UPTIMEROBOT_API_KEY`. Proxy error responses use `no-store` so 4xx/5xx responses are not cached.
 
 ## ⚙️ Deployment & Configuration
 
@@ -93,12 +89,14 @@ This project supports the following three deployment methods, all of which can a
    - Connect to GitHub and select the project
    - Select Vue as the framework preset and click Deploy
    - Use the default configuration `VITE_UPTIMEROBOT_API_URL = "/api/status"`
+   - Add `UPTIMEROBOT_API_KEY` as a server-side environment variable or Secret
 
 2. **Vercel**
    - Click the black "Deploy" button above
    - Connect to GitHub and select the project
    - Enter the project name and click Create
    - Use the default configuration `VITE_UPTIMEROBOT_API_URL = "/api/status"`
+   - Add `UPTIMEROBOT_API_KEY` to the project environment variables
 
 3. **Cloudflare Pages**
    - Click the orange "Deploy" button above
@@ -106,6 +104,7 @@ This project supports the following three deployment methods, all of which can a
    - Click Create, select Pages, connect to GitHub, select the project, and click Begin setup
    - Select Vue as the framework preset and click Save & Deploy
    - Use the default configuration `VITE_UPTIMEROBOT_API_URL = "/api/status"`
+   - Add `UPTIMEROBOT_API_KEY` under Variables and Secrets for both Production and Preview
 
 4. **Other Platforms**
    - Build your own API proxy targeting `https://api.uptimerobot.com/v3`
@@ -126,13 +125,12 @@ pnpm install
 npm install
 ```
 
+With pnpm 11, the committed `pnpm-workspace.yaml` allows only `esbuild` to run its install script. Commit this file when deploying with pnpm, otherwise installation may fail with `ERR_PNPM_IGNORED_BUILDS`.
+
 3. Configure environment variables
 
 Modify the following settings in the `.env` file:
 ```bash
-# UptimeRobot API Key (Read-Only is sufficient)
-VITE_UPTIMEROBOT_API_KEY = "your API key"
-
 # UptimeRobot API URL
 # When deploying to Vercel / Cloudflare Pages / EdgeOne:
 VITE_UPTIMEROBOT_API_URL = "/api/status"
@@ -151,7 +149,15 @@ VITE_UPTIMEROBOT_STATUS_SORT = "create_datetime"
 VITE_CUSTOM_DOMAIN_ORDER = "https://www.example.com,api.example.com"
 ```
 
-`VITE_UPTIMEROBOT_STATUS_SORT` only sets the default for a first visit. The header control can still change the field and direction, and that preference is saved in the browser. Matches in `VITE_CUSTOM_DOMAIN_ORDER` always stay pinned first; all other monitors use the current UI sort.
+Add the read-only Key to the deployment platform's server-side environment variables or Secrets:
+
+```bash
+UPTIMEROBOT_API_KEY = "your Read-Only API Key"
+```
+
+Do not configure `VITE_UPTIMEROBOT_API_KEY` in production: every `VITE_` variable is bundled into the frontend. Only use it temporarily in the Git-ignored `.env.local` when debugging a direct local v3 connection.
+
+On the first visit, monitors in `VITE_CUSTOM_DOMAIN_ORDER` are pinned in the configured order. Unlisted monitors follow them and use `VITE_UPTIMEROBOT_STATUS_SORT`. Clicking the direction button or selecting time/status temporarily disables custom-domain ordering and sorts the entire list using the UI selection. Selecting name again restores custom-domain ordering. The active mode and UI preference are saved in the browser.
 
 4. Development & Debugging
 ```bash
@@ -167,14 +173,6 @@ pnpm build
 npm run build
 ```
 The built files are in the `dist` directory. Deploy the `dist` directory to your server.
-
-## CDN Sponsorship
-
-CDN acceleration and security protection for this project are sponsored by Tencent EdgeOne: EdgeOne provides a long-term valid free plan with unlimited traffic and requests, covering mainland China nodes with no overcharge fees. Interested users can visit the EdgeOne official website to learn more.
-<a href="https://edgeone.ai/en?from=github" target="_blank">
-    Best Asian CDN, Edge & Security Solutions - Tencent EdgeOne
-<img src="https://edgeone.ai/media/34fe3a45-492d-4ea4-ae5d-ea1087ca7b4b.png" width="500" height="100">
-</a>
 
 ## 📝 License
 
