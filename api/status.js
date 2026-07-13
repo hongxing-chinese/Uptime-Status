@@ -13,8 +13,11 @@ export class RateLimitError extends Error {
 const trim = (v) => v?.replace(/^["']|["']$/g, '').trim()
 const absUrl = (path) => path.startsWith('http') ? path : `${API}${path.startsWith('/') ? path : `/${path}`}`
 
+const runtimeEnv = () => typeof process === 'undefined' ? {} : process.env
+
 const keyOf = (o = {}) => trim(o.apiKey) || trim(o.api_key)
-  || trim(process.env.UPTIMEROBOT_API_KEY) || trim(process.env.VITE_UPTIMEROBOT_API_KEY)
+  || trim(o.env?.UPTIMEROBOT_API_KEY) || trim(o.env?.VITE_UPTIMEROBOT_API_KEY)
+  || trim(runtimeEnv().UPTIMEROBOT_API_KEY) || trim(runtimeEnv().VITE_UPTIMEROBOT_API_KEY)
 
 async function get(apiKey, url) {
   const res = await fetch(url, {
@@ -88,9 +91,9 @@ export async function getCachedMonitorStatus(apiKey, { force = false } = {}) {
   return data
 }
 
-export async function parseRequestApiKey(req) {
-  const env = process.env.UPTIMEROBOT_API_KEY || process.env.VITE_UPTIMEROBOT_API_KEY
-  if (env) return env
+export async function parseRequestApiKey(req, env = {}) {
+  const configuredKey = keyOf({ env })
+  if (configuredKey) return configuredKey
   const auth = req.headers.get('Authorization')
   if (auth?.startsWith('Bearer ')) return auth.slice(7)
   const q = new URL(req.url).searchParams

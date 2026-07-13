@@ -13,10 +13,10 @@
 </p>
 
 <p align="center">
-  <a href="https://vercel.com/new/clone?repository-url=https://github.com/JLinmr/uptime-status" title="使用 Vercel 部署">
+  <a href="https://vercel.com/new/clone?repository-url=https://github.com/hongxing-chinese/Uptime-Status" title="使用 Vercel 部署">
     <img src="https://vercel.com/button" alt="Deploy with Vercel" />
   </a>
-  <a href="https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2FJLinMr%2FUptime-Status&output-directory=dist&install-command=npm%20install&build-command=npm%20run%20build" target="_blank" rel="noopener noreferrer">
+  <a href="https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fhongxing-chinese%2FUptime-Status&output-directory=dist&install-command=npm%20install&build-command=npm%20run%20build" target="_blank" rel="noopener noreferrer">
     <img src="https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg" alt="Deploy with EdgeOne Pages">
   </a>
   <a href="https://console.cloud.tencent.com/edgeone/pages?action=create" title="使用腾讯云 EdgeOne Pages 部署">
@@ -28,8 +28,8 @@
 </p>
 
 <p align="center">🎮 在线演示：
-  <a href="https://status.bsgun.cn" target="_blank">
-    https://status.bsgun.cn
+  <a href="https://status.1949101.xyz" target="_blank">
+    https://status.1949101.xyz
   </a>
 </p>
 
@@ -115,7 +115,7 @@ UptimeRobot 已全面切换到 **v3 REST API**，旧版 v2 接口已不可用。
 
 1. 克隆项目
 ```bash
-git clone https://github.com/JLinmr/uptime-status.git
+git clone https://github.com/hongxing-chinese/Uptime-Status.git
 cd uptime-status
 ```
 
@@ -141,10 +141,17 @@ VITE_UPTIMEROBOT_API_URL = "/api/status"
 # VITE_UPTIMEROBOT_API_URL = "https://api.uptimerobot.com/v3"
 
 # 站点名称
-VITE_APP_TITLE = "梦爱吃鱼"
+VITE_APP_TITLE = "Status Page By 山人"
+
+# 监控列表默认排序字段：friendly_name / create_datetime / status
+VITE_UPTIMEROBOT_STATUS_SORT = "create_datetime"
+
+# 自定义域名顺序（可选，多个地址用逗号分隔）
+# 支持完整 URL 或域名；匹配项会按配置顺序置顶
+VITE_CUSTOM_DOMAIN_ORDER = "https://www.example.com,status.example.com"
 ```
 
-> 已移除 `VITE_UPTIMEROBOT_STATUS_SORT` 配置项，排序请在页面右上角选择，偏好会自动保存到浏览器。
+`VITE_UPTIMEROBOT_STATUS_SORT` 仅设置首次访问时的默认排序。页面右上角仍可切换排序字段和升降序，选择会保存在浏览器中；`VITE_CUSTOM_DOMAIN_ORDER` 中的匹配项始终优先置顶，其余项目使用当前页面排序。
 
 4. 开发调试
 ```bash

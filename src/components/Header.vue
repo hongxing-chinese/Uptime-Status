@@ -79,8 +79,15 @@ const KEY_ICON = { friendlyName: 'ph:text-aa-bold', createDateTime: 'ph:clock-bo
 const sortOpen = ref(false)
 const sortRef = ref(null)
 const sortLabel = computed(() => t(`sort.${props.sort.key || 'friendlyName'}`))
-const toggleOrder = () => emit('update:sort', { ...props.sort, order: props.sort.order === 'asc' ? 'desc' : 'asc' })
-const pickKey = (key) => { emit('update:sort', { ...props.sort, key }); sortOpen.value = false }
+const toggleOrder = () => emit('update:sort', {
+  ...props.sort,
+  order: props.sort.order === 'asc' ? 'desc' : 'asc',
+  customOrder: false
+})
+const pickKey = (key) => {
+  emit('update:sort', { ...props.sort, key, customOrder: key === 'friendlyName' })
+  sortOpen.value = false
+}
 const onDocClick = (e) => { if (sortRef.value && !sortRef.value.contains(e.target)) sortOpen.value = false }
 
 const REFRESH_INTERVAL = 300

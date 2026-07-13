@@ -28,19 +28,42 @@ const monitors = ref([])
 const isRefreshing = ref(false)
 const isDark = ref(false)
 const error = ref('')
+
+const SORT_KEY_MAP = {
+  friendly_name: 'friendlyName',
+  create_datetime: 'createDateTime',
+  status: 'status'
+}
+const SORT_KEYS = new Set(Object.values(SORT_KEY_MAP))
+const envSortKey = SORT_KEY_MAP[import.meta.env.VITE_UPTIMEROBOT_STATUS_SORT?.trim().toLowerCase()]
+  || 'friendlyName'
+const defaultSort = () => ({
+  key: envSortKey,
+  order: envSortKey === 'createDateTime' ? 'desc' : 'asc',
+  customOrder: true
+})
+
 const loadSort = () => {
   const raw = localStorage.getItem('monitorSort')
-  if (!raw) return { key: 'friendlyName', order: 'asc' }
+  if (!raw) return defaultSort()
   if (raw.includes(':')) {
-    const [key, order] = raw.split(':')
-    return { key: key || 'friendlyName', order: order === 'desc' ? 'desc' : 'asc' }
+    const [key, order, mode] = raw.split(':')
+    return {
+      key: SORT_KEYS.has(key) ? key : envSortKey,
+      order: order === 'desc' ? 'desc' : 'asc',
+      customOrder: mode ? mode === 'custom' : true
+    }
   }
-  return { key: raw, order: raw === 'createDateTime' ? 'desc' : 'asc' }
+  const key = SORT_KEYS.has(raw) ? raw : envSortKey
+  return { key, order: key === 'createDateTime' ? 'desc' : 'asc', customOrder: true }
 }
 
 const sort = ref(loadSort())
 
-watch(sort, (v) => localStorage.setItem('monitorSort', `${v.key}:${v.order}`), { deep: true })
+watch(sort, (v) => {
+  const mode = v.customOrder ? 'custom' : 'plain'
+  localStorage.setItem('monitorSort', `${v.key}:${v.order}:${mode}`)
+}, { deep: true })
 watch(locale, () => { title.value = import.meta.env.VITE_APP_TITLE || t('common.title') })
 
 const toggleLanguage = () => {

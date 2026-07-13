@@ -13,10 +13,10 @@
 </p>
 
 <p align="center">
-  <a href="https://vercel.com/new/clone?repository-url=https://github.com/JLinmr/uptime-status" title="Deploy with Vercel">
+  <a href="https://vercel.com/new/clone?repository-url=https://github.com/hongxing-chinese/Uptime-Status" title="Deploy with Vercel">
     <img src="https://vercel.com/button" alt="Deploy with Vercel" />
   </a>
-  <a href="https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2FJLinMr%2FUptime-Status&output-directory=dist&install-command=npm%20install&build-command=npm%20run%20build" target="_blank" rel="noopener noreferrer">
+  <a href="https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fhongxing-chinese%2FUptime-Status&output-directory=dist&install-command=npm%20install&build-command=npm%20run%20build" target="_blank" rel="noopener noreferrer">
     <img src="https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg" alt="Deploy with EdgeOne Pages">
   </a>
   <a href="https://console.cloud.tencent.com/edgeone/pages?action=create" title="Deploy to Tencent Cloud EdgeOne Pages">
@@ -28,8 +28,8 @@
 </p>
 
 <p align="center">🎮 Live Demo:
-  <a href="https://status.bsgun.cn" target="_blank">
-    https://status.bsgun.cn
+  <a href="https://status.1949101.xyz" target="_blank">
+    https://status.1949101.xyz
   </a>
 </p>
 
@@ -115,7 +115,7 @@ This project supports the following three deployment methods, all of which can a
 
 1. Clone the repository
 ```bash
-git clone https://github.com/JLinmr/uptime-status.git
+git clone https://github.com/hongxing-chinese/Uptime-Status.git
 cd uptime-status
 ```
 
@@ -141,10 +141,17 @@ VITE_UPTIMEROBOT_API_URL = "/api/status"
 # VITE_UPTIMEROBOT_API_URL = "https://api.uptimerobot.com/v3"
 
 # Website Title
-VITE_APP_TITLE = "Website Monitor"
+VITE_APP_TITLE = "Status Page By 山人"
+
+# Default monitor sort: friendly_name / create_datetime / status
+VITE_UPTIMEROBOT_STATUS_SORT = "create_datetime"
+
+# Optional custom domain order (comma-separated)
+# Full URLs and domain names are supported; matches are pinned in this order
+VITE_CUSTOM_DOMAIN_ORDER = "https://www.example.com,api.example.com"
 ```
 
-> `VITE_UPTIMEROBOT_STATUS_SORT` has been removed. Use the sort control in the page header; your preference is saved in the browser.
+`VITE_UPTIMEROBOT_STATUS_SORT` only sets the default for a first visit. The header control can still change the field and direction, and that preference is saved in the browser. Matches in `VITE_CUSTOM_DOMAIN_ORDER` always stay pinned first; all other monitors use the current UI sort.
 
 4. Development & Debugging
 ```bash
