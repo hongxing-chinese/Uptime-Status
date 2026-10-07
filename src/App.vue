@@ -16,6 +16,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { DEFAULT_SORT_KEY, DEFAULT_SORT_ORDER, SORT_KEYS } from './utils/monitor'
 import { fetchMonitorData, writeCache, readCache, isRateLimit, waitRetry } from './utils/api'
 import Header from './components/Header.vue'
 import Stats from './components/Stats.vue'
@@ -28,19 +29,38 @@ const monitors = ref([])
 const isRefreshing = ref(false)
 const isDark = ref(false)
 const error = ref('')
+const validSortKeys = new Set(SORT_KEYS)
+const defaultSort = () => ({
+  key: DEFAULT_SORT_KEY,
+  order: DEFAULT_SORT_ORDER,
+  customOrder: true
+})
+
 const loadSort = () => {
   const raw = localStorage.getItem('monitorSort')
-  if (!raw) return { key: 'friendlyName', order: 'asc' }
+  if (!raw) return defaultSort()
   if (raw.includes(':')) {
-    const [key, order] = raw.split(':')
-    return { key: key || 'friendlyName', order: order === 'desc' ? 'desc' : 'asc' }
+    const [key, order, mode] = raw.split(':')
+    return {
+      key: validSortKeys.has(key) ? key : DEFAULT_SORT_KEY,
+      order: order === 'desc' ? 'desc' : 'asc',
+      customOrder: mode ? mode === 'custom' : true
+    }
   }
-  return { key: raw, order: raw === 'createDateTime' ? 'desc' : 'asc' }
+  const key = validSortKeys.has(raw) ? raw : DEFAULT_SORT_KEY
+  return {
+    key,
+    order: key === 'createDateTime' ? 'desc' : 'asc',
+    customOrder: true
+  }
 }
 
 const sort = ref(loadSort())
 
-watch(sort, (v) => localStorage.setItem('monitorSort', `${v.key}:${v.order}`), { deep: true })
+watch(sort, (v) => {
+  const mode = v.customOrder ? 'custom' : 'plain'
+  localStorage.setItem('monitorSort', `${v.key}:${v.order}:${mode}`)
+}, { deep: true })
 watch(locale, () => { title.value = import.meta.env.VITE_APP_TITLE || t('common.title') })
 
 const toggleLanguage = () => {

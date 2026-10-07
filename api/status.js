@@ -13,7 +13,11 @@ export class RateLimitError extends Error {
 const trim = (v) => v?.replace(/^["']|["']$/g, '').trim()
 const absUrl = (path) => path.startsWith('http') ? path : `${API}${path.startsWith('/') ? path : `/${path}`}`
 
-const keyOf = (o = {}) => trim(o.apiKey) || trim(o.api_key)  || trim(o?.env?.UPTIMEROBOT_API_KEY) || trim(o?.env?.VITE_UPTIMEROBOT_API_KEY)  || trim(process.env.UPTIMEROBOT_API_KEY) || trim(process.env.VITE_UPTIMEROBOT_API_KEY)
+const runtimeEnv = () => typeof process === 'undefined' ? {} : process.env || {}
+
+const keyOf = (o = {}) => trim(o.apiKey) || trim(o.api_key)
+  || trim(o.env?.UPTIMEROBOT_API_KEY) || trim(o.env?.VITE_UPTIMEROBOT_API_KEY)
+  || trim(runtimeEnv().UPTIMEROBOT_API_KEY) || trim(runtimeEnv().VITE_UPTIMEROBOT_API_KEY)
 
 async function get(apiKey, url) {
   const res = await fetch(url, {
@@ -111,7 +115,10 @@ export const corsHeaders = {
 export default async function handler(req, res) {
   Object.entries(corsHeaders).forEach(([k, v]) => res.setHeader(k, v))
   if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.method !== 'GET' && req.method !== 'POST') return res.status(405).json({ error: '只支持 GET / POST' })
+  if (req.method !== 'GET' && req.method !== 'POST') {
+    res.setHeader('Cache-Control', 'no-store')
+    return res.status(405).json({ error: '只支持 GET / POST' })
+  }
 
   try {
     const apiKey = keyOf({})
@@ -127,6 +134,7 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', `public, max-age=${CACHE_TTL_MS / 1000 | 0}`)
     return res.json(data)
   } catch (e) {
+    res.setHeader('Cache-Control', 'no-store')
     if (e instanceof RateLimitError) {
       return res.status(429).json({ error: e.message, retryAfter: e.retryAfter })
     }

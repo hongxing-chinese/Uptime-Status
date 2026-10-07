@@ -8,7 +8,11 @@ import {
 
 const json = (body, status = 200) => new Response(JSON.stringify(body), {
   status,
-  headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${CACHE_TTL_MS / 1000 | 0}` }
+  headers: {
+    ...corsHeaders,
+    'Content-Type': 'application/json',
+    'Cache-Control': status >= 400 ? 'no-store' : `public, max-age=${CACHE_TTL_MS / 1000 | 0}`
+  }
 })
 
 export async function onRequest(context) {

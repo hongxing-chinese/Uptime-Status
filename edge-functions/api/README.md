@@ -12,7 +12,7 @@
 - 处理 CORS（跨域）请求
 - 服务端缓存（5 分钟）与 429 限流响应
 
-逻辑与 `api/status.js`（Cloudflare 版）共用同一套实现，但由于EdgeOne的Edge Functions只读取特定目录下的代码，特此抽离。
+逻辑与 `api/status.js` 共用同一套实现。EdgeOne Pages 的 Edge Functions 使用此目录约定，因此保留独立入口。
 
 ## 接口说明
 
@@ -31,16 +31,14 @@
 ## 环境变量
 
 ```bash
-VITE_UPTIMEROBOT_API_KEY = "你的 Read-Only API Key"
-VITE_UPTIMEROBOT_API_URL = "/api/status"
-
-# 以下任选其一，供边缘函数使用
 UPTIMEROBOT_API_KEY = "你的 Read-Only API Key"
 ```
 
+前端构建配置使用 `VITE_UPTIMEROBOT_API_URL = "/api/status"`。不要在生产环境设置 `VITE_UPTIMEROBOT_API_KEY`，因为 `VITE_` 变量会进入前端构建产物。
+
 ## 部署说明
 
-- 支持 **腾讯云 EdgeOne Pages**、**Cloudflare Pages**
+- 专用于 **腾讯云 EdgeOne Pages** 部署
 - 路由 `/api/status` 由平台自动处理
 - 无需额外路由配置
 

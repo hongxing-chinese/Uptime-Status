@@ -12,7 +12,59 @@ const rank = (s) => ({ UP: 0, STARTED: 1, PAUSED: 2, LOOKS_DOWN: 3, DOWN: 4 }[no
 
 const cmp = (a, b) => String(a.id).localeCompare(String(b.id), undefined, { numeric: true })
 
-export const sortMonitors = (list, { key = 'friendlyName', order = 'asc' } = {}) => {
+export const SORT_KEYS = Object.freeze(['friendlyName', 'createDateTime', 'status'])
+
+const SORT_KEY_MAP = Object.freeze({
+  friendly_name: 'friendlyName',
+  create_datetime: 'createDateTime',
+  status: 'status'
+})
+const configuredSortKey = import.meta.env.VITE_UPTIMEROBOT_STATUS_SORT?.trim().toLowerCase()
+export const DEFAULT_SORT_KEY = Object.prototype.hasOwnProperty.call(SORT_KEY_MAP, configuredSortKey)
+  ? SORT_KEY_MAP[configuredSortKey]
+  : 'friendlyName'
+export const DEFAULT_SORT_ORDER = DEFAULT_SORT_KEY === 'createDateTime' ? 'desc' : 'asc'
+
+const parseDomain = (value) => {
+  const raw = String(value || '').trim().toLowerCase()
+  if (!raw) return null
+
+  try {
+    const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`)
+    return {
+      hostname: parsed.hostname,
+      port: parsed.port,
+      pathname: parsed.pathname.replace(/\/+$/, '')
+    }
+  } catch {
+    return null
+  }
+}
+
+const customDomainOrder = String(import.meta.env.VITE_CUSTOM_DOMAIN_ORDER || '')
+  .split(',')
+  .map(parseDomain)
+  .filter(Boolean)
+
+const customOrderIndex = (monitorUrl) => {
+  if (!customDomainOrder.length) return Infinity
+  const monitor = parseDomain(monitorUrl)
+  if (!monitor) return Infinity
+
+  const index = customDomainOrder.findIndex((rule) => (
+    rule.hostname === monitor.hostname
+    && (!rule.port || rule.port === monitor.port)
+    && (!rule.pathname || rule.pathname === monitor.pathname)
+  ))
+  return index < 0 ? Infinity : index
+}
+
+export const sortMonitors = (list, {
+  key = 'friendlyName',
+  order = 'asc',
+  customOrder = false
+} = {}) => {
+  const useCustomOrder = customOrder && customDomainOrder.length > 0
   const dir = order === 'desc' ? -1 : 1
   const get = {
     friendlyName: (m) => m.friendlyName || '',
@@ -21,6 +73,16 @@ export const sortMonitors = (list, { key = 'friendlyName', order = 'asc' } = {})
   }[key] || ((m) => m.friendlyName || '')
 
   return [...list].sort((a, b) => {
+    if (useCustomOrder) {
+      const customA = customOrderIndex(a.url)
+      const customB = customOrderIndex(b.url)
+      if (customA !== customB) {
+        if (customA === Infinity) return 1
+        if (customB === Infinity) return -1
+        return customA - customB
+      }
+    }
+
     const va = get(a), vb = get(b)
     const d = typeof va === 'string'
       ? va.localeCompare(vb, undefined, { numeric: true, sensitivity: 'base' })

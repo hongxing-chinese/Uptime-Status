@@ -35,15 +35,13 @@
 
 ## 环境变量
 
-在项目根目录 `.env` 或 Vercel 环境变量中配置：
+在 Vercel 项目环境变量中配置服务端只读 Key：
 
 ```bash
-VITE_UPTIMEROBOT_API_KEY = "你的 Read-Only API Key"
-VITE_UPTIMEROBOT_API_URL = "/api/status"
-
-# 以下任选其一，供服务端代理使用
 UPTIMEROBOT_API_KEY = "你的 Read-Only API Key"
 ```
+
+前端构建配置使用 `VITE_UPTIMEROBOT_API_URL = "/api/status"`。不要在生产环境设置 `VITE_UPTIMEROBOT_API_KEY`，因为 `VITE_` 变量会进入前端构建产物。
 
 ## 部署说明
 

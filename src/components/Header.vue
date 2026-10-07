@@ -64,23 +64,30 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
+import { SORT_KEYS } from '../utils/monitor'
 
 const { t, locale } = useI18n()
 const props = defineProps({
   title: { type: String, required: true },
   isRefreshing: { type: Boolean, default: false },
   isDark: { type: Boolean, default: false },
-  sort: { type: Object, default: () => ({ key: 'friendlyName', order: 'asc' }) }
+  sort: { type: Object, default: () => ({ key: 'friendlyName', order: 'asc', customOrder: false }) }
 })
 const emit = defineEmits(['refresh', 'toggle-theme', 'toggle-language', 'update:sort'])
 
-const SORT_KEYS = ['friendlyName', 'createDateTime', 'status']
 const KEY_ICON = { friendlyName: 'ph:text-aa-bold', createDateTime: 'ph:clock-bold', status: 'ph:circles-three-bold' }
 const sortOpen = ref(false)
 const sortRef = ref(null)
 const sortLabel = computed(() => t(`sort.${props.sort.key || 'friendlyName'}`))
-const toggleOrder = () => emit('update:sort', { ...props.sort, order: props.sort.order === 'asc' ? 'desc' : 'asc' })
-const pickKey = (key) => { emit('update:sort', { ...props.sort, key }); sortOpen.value = false }
+const toggleOrder = () => emit('update:sort', {
+  ...props.sort,
+  order: props.sort.order === 'asc' ? 'desc' : 'asc',
+  customOrder: false
+})
+const pickKey = (key) => {
+  emit('update:sort', { ...props.sort, key, customOrder: key === 'friendlyName' })
+  sortOpen.value = false
+}
 const onDocClick = (e) => { if (sortRef.value && !sortRef.value.contains(e.target)) sortOpen.value = false }
 
 const REFRESH_INTERVAL = 300

@@ -13,10 +13,10 @@
 </p>
 
 <p align="center">
-  <a href="https://vercel.com/new/clone?repository-url=https://github.com/JLinmr/uptime-status" title="使用 Vercel 部署">
+  <a href="https://vercel.com/new/clone?repository-url=https://github.com/hongxing-chinese/Uptime-Status" title="使用 Vercel 部署">
     <img src="https://vercel.com/button" alt="Deploy with Vercel" />
   </a>
-  <a href="https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2FJLinMr%2FUptime-Status&output-directory=dist&install-command=npm%20install&build-command=npm%20run%20build" target="_blank" rel="noopener noreferrer">
+  <a href="https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2Fhongxing-chinese%2FUptime-Status&output-directory=dist&install-command=npm%20install&build-command=npm%20run%20build" target="_blank" rel="noopener noreferrer">
     <img src="https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg" alt="Deploy with EdgeOne Pages">
   </a>
   <a href="https://console.cloud.tencent.com/edgeone/pages?action=create" title="使用腾讯云 EdgeOne Pages 部署">
@@ -28,8 +28,8 @@
 </p>
 
 <p align="center">🎮 在线演示：
-  <a href="https://status.bsgun.cn" target="_blank">
-    https://status.bsgun.cn
+  <a href="https://status.1949101.xyz" target="_blank">
+    https://status.1949101.xyz
   </a>
 </p>
 
@@ -43,10 +43,6 @@
 
 > **升级提示**：UptimeRobot 已停用旧版 v2 接口（`.../v2/getMonitors`）。若你仍在使用旧版代码，请拉取最新版本并重新部署，否则会出现加载失败或请求超时。
 
-## ✨ 功能预览
-
-![功能预览](https://i1.wp.com/dev.ruom.top/i/2025/01/25/629114.webp)
-
 ## ✨ 特性
 
 - 📊 实时监控：支持多种监控方式
@@ -55,7 +51,7 @@
 - 📈 数据统计：可视化展示可用率和响应时间（响应时间点击后加载）
 - 🔔 故障记录：详细的宕机记录和原因分析
 - 🔄 自动刷新：定时自动更新监控数据（5 分钟缓存）
-- 🔃 排序切换：支持按名称、时间、状态排序及升序/降序
+- 🔃 排序切换：支持自定义域名置顶，以及名称、时间、状态和升降序切换
 - 💫 平滑动画：流畅的用户界面交互体验
 
 ### UptimeRobot API 变更说明
@@ -68,7 +64,7 @@ UptimeRobot 已全面切换到 **v3 REST API**，旧版 v2 接口已不可用。
 | 认证 | POST 表单 + `api_key` | `Authorization: Bearer <key>` |
 | 数据 | 单次返回 | 分页 REST（monitors、incidents 等） |
 
-本项目已通过 `/api/status` 服务端代理对接 v3，部署时 **无需** 在前端直连 UptimeRobot。
+本项目已通过 `/api/status` 服务端代理对接 v3，部署时 **无需** 在前端直连 UptimeRobot。Vercel 使用 Node.js 环境变量，Cloudflare Pages 与 EdgeOne Pages 使用边缘函数环境变量；服务端统一读取 `UPTIMEROBOT_API_KEY`。代理错误响应使用 `no-store`，避免 4xx/5xx 被缓存。
 
 ## ⚙️ 部署配置
 
@@ -93,12 +89,14 @@ UptimeRobot 已全面切换到 **v3 REST API**，旧版 v2 接口已不可用。
    - 连接到GitHub，选择项目
    - 框架预设选择Vue，点击开始部署
    - 使用默认配置 `VITE_UPTIMEROBOT_API_URL = "/api/status"`
+   - 在服务端环境变量中添加 `UPTIMEROBOT_API_KEY`
 
 2. **Vercel**
    - 点击上方黑色 "Deploy" 按钮
    - 连接到GitHub，选择项目
    - 填写项目名称，点击Create
    - 使用默认配置 `VITE_UPTIMEROBOT_API_URL = "/api/status"`
+   - 在项目环境变量中添加 `UPTIMEROBOT_API_KEY`
 
 3. **Cloudflare Pages**
    - 点击上方橙色 "Deploy" 按钮
@@ -106,6 +104,7 @@ UptimeRobot 已全面切换到 **v3 REST API**，旧版 v2 接口已不可用。
    - 点击创建，选择Pages，连接到GitHub，选择项目，点击开始创建
    - 框架预设选择Vue，点击保持并部署
    - 使用默认配置 `VITE_UPTIMEROBOT_API_URL = "/api/status"`
+   - 在 Production 和 Preview 的 Variables and Secrets 中添加 `UPTIMEROBOT_API_KEY`
 
 4. **其他平台**
    - 自行搭建 API 代理，代理目标为 `https://api.uptimerobot.com/v3`
@@ -115,7 +114,7 @@ UptimeRobot 已全面切换到 **v3 REST API**，旧版 v2 接口已不可用。
 
 1. 克隆项目
 ```bash
-git clone https://github.com/JLinmr/uptime-status.git
+git clone https://github.com/hongxing-chinese/Uptime-Status.git
 cd uptime-status
 ```
 
@@ -126,13 +125,12 @@ pnpm install
 npm install
 ```
 
+使用 pnpm 11 时，仓库中的 `pnpm-workspace.yaml` 仅允许 `esbuild` 执行安装脚本。使用 pnpm 部署时应一并提交该文件，否则可能出现 `ERR_PNPM_IGNORED_BUILDS`。
+
 3. 配置环境变量
 
 在 `.env` 文件中修改以下配置：
 ```bash
-# UptimeRobot API Key（Read-Only 即可）
-VITE_UPTIMEROBOT_API_KEY = "你的 API Key"
-
 # UptimeRobot API URL
 # 部署到 Vercel / Cloudflare Pages / EdgeOne 等平台时使用：
 VITE_UPTIMEROBOT_API_URL = "/api/status"
@@ -141,10 +139,25 @@ VITE_UPTIMEROBOT_API_URL = "/api/status"
 # VITE_UPTIMEROBOT_API_URL = "https://api.uptimerobot.com/v3"
 
 # 站点名称
-VITE_APP_TITLE = "梦爱吃鱼"
+VITE_APP_TITLE = "Status Page By 山人"
+
+# 监控列表默认排序字段：friendly_name / create_datetime / status
+VITE_UPTIMEROBOT_STATUS_SORT = "create_datetime"
+
+# 自定义域名顺序（可选，多个地址用逗号分隔）
+# 支持完整 URL 或域名；匹配项会按配置顺序置顶
+VITE_CUSTOM_DOMAIN_ORDER = "https://www.example.com,status.example.com"
 ```
 
-> 已移除 `VITE_UPTIMEROBOT_STATUS_SORT` 配置项，排序请在页面右上角选择，偏好会自动保存到浏览器。
+在部署平台的服务端环境变量或 Secrets 中添加只读 Key：
+
+```bash
+UPTIMEROBOT_API_KEY = "你的 Read-Only API Key"
+```
+
+不要在生产环境配置 `VITE_UPTIMEROBOT_API_KEY`：所有 `VITE_` 变量都会进入前端产物。只有本地直连 v3 调试时，才可在被 Git 忽略的 `.env.local` 中临时配置该变量。
+
+首次访问时，`VITE_CUSTOM_DOMAIN_ORDER` 中的监控项按配置顺序置顶，未配置项紧随其后并按 `VITE_UPTIMEROBOT_STATUS_SORT` 排序。点击升降序按钮或选择时间、状态后，自定义域名顺序暂时失效，整个列表使用页面排序；重新选择名称时恢复自定义域名顺序。当前模式和页面排序偏好会保存在浏览器中。
 
 4. 开发调试
 ```bash
